@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { Container, Box, Heading, Card, Image, Text, SearchField } from 'gestalt';
+import { Container, Box, Heading, Card, Image, Text, SearchField, Icon } from 'gestalt';
 import { Link } from 'react-router-dom';
 import './App.css';
 import Strapi from 'strapi-sdk-javascript/build/main';
@@ -34,12 +34,25 @@ class App extends Component {
     }
   }
 
+  handleChange = ({value}) => {
+    this.setState({ searchTerm: value});
+  }
+
+  filteredBrands = ({ searchTerm, brands }) => {
+    return brands.filter(brand => {
+      return brand.name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  };
+
   render() {
-    const { brands } = this.state;
+    const { searchTerm } = this.state;
     return (
       <Container>
         <Box display="flex" justifyContent="center" marginTop={10} marginBottom={10}>
           <SearchField id="searchField" accessibilityLabel="Branch Search Field" onChange={this.handleChange} placeholder="Search Brands" />
+          <Box margin={3}>
+            <Icon icon="filter" color={searchTerm ? 'orange' : 'gray'} size={20} accessibilityLabel="Filter" />
+          </Box>
         </Box>
 
         <Box display="flex" justifyContent="center" marginBottom={2}>
@@ -49,8 +62,8 @@ class App extends Component {
         </Box>
         <Box display="flex" justifyContent="around" direction="row" alignItems="center">
 
-          {brands.map(brands => (
-            <Box key={brands._id}>
+          {this.filteredBrands(this.state).map(brands => (
+            <Box wrap key={brands._id} height={200} width={200}>
               <Card image={
                 <Box height={200} width={200}>
                   <Image alt="Brand" naturalHeight={2} naturalWidth={2} src={`${apiUrl}${brands.image.url}`} />
