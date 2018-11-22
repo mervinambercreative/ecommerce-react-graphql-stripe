@@ -1,5 +1,6 @@
 import React, { Component} from 'react';
-import { Container, Box, Heading, Card, Image } from 'gestalt';
+import { Container, Box, Heading, Card, Image, Text, SearchField } from 'gestalt';
+import { Link } from 'react-router-dom';
 import './App.css';
 import Strapi from 'strapi-sdk-javascript/build/main';
 const apiUrl = process.env.API_URL || 'http://localhost:1337';
@@ -7,7 +8,8 @@ const strapi = new Strapi(apiUrl);
 
 class App extends Component {
   state = {
-    brands: []
+    brands: [],
+    searchTerm: ' '
   }
   async componentDidMount(){
     try{
@@ -36,26 +38,33 @@ class App extends Component {
     const { brands } = this.state;
     return (
       <Container>
+        <Box display="flex" justifyContent="center" marginTop={10} marginBottom={10}>
+          <SearchField id="searchField" accessibilityLabel="Branch Search Field" onChange={this.handleChange} placeholder="Search Brands" />
+        </Box>
+
         <Box display="flex" justifyContent="center" marginBottom={2}>
           <Heading color="midnight" size="md">
             Brew Brands
           </Heading>
         </Box>
-        <Box display="flex" justifyContent="center">
+        <Box display="flex" justifyContent="around" direction="row" alignItems="center">
+
           {brands.map(brands => (
             <Box key={brands._id}>
               <Card image={
                 <Box height={200} width={200}>
-                  <Image
-                  alt="Brand"
-                  naturalHeight={2}
-                  naturalWidth={1}
-                  src={`${apiUrl}${brands.image.url}`} />
+                  <Image alt="Brand" naturalHeight={2} naturalWidth={2} src={`${apiUrl}${brands.image.url}`} />
                 </Box>
               }>
+              <Text size="xl" align="center">{brands.name}</Text>
+              <Text align="center">{brands.Description}</Text>
+              <Text size="xl" align="center">
+                <Link to={`/${brands._id}`}>See Brews</Link>
+              </Text>
               </Card>
             </Box>
           ))}
+
         </Box>
       </Container>
     );
